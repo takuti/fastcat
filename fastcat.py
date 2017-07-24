@@ -3,17 +3,23 @@
 import os
 import re
 import bz2
-import urllib
+
+try:  # python2
+    from urllib import urlretrieve, unquote
+except ImportError:  # python3
+    from urllib.request import urlretrieve
+    from urllib.parse import unquote
 
 import redis
 
 skos_file = "skos.nt.bz2"
-ntriple_pattern = re.compile('^<(.+)> <(.+)> <(.+)> \.\n$') 
+ntriple_pattern = re.compile('^<(.+)> <(.+)> <(.+)> \.\n$')
+
 
 class FastCat(object):
 
     def __init__(self, db=None):
-        if db == None:
+        if db is None:
             db = redis.Redis()
         self.db = db
 
@@ -31,16 +37,16 @@ class FastCat(object):
 
     def load(self):
         if self.db.get("loaded-skos"):
-            return 
+            return
 
         if not os.path.isfile(skos_file):
             self.download()
 
-        print "loading %s" % skos_file
+        print("loading %s" % skos_file)
         for line in bz2.BZ2File(skos_file):
-            m = ntriple_pattern.match(line)
-            
-            if not m: 
+            m = ntriple_pattern.match(line.decode('utf-8'))
+
+            if not m:
                 continue
 
             s, p, o = m.groups()
@@ -51,15 +57,15 @@ class FastCat(object):
             broader = self._name(o)
             self.db.sadd("b:%s" % narrower, broader)
             self.db.sadd("n:%s" % broader, narrower)
-            print ("added %s -> %s" % (broader, narrower)).encode('utf-8')
+            print("added %s -> %s" % (broader, narrower))
 
         self.db.set("loaded-skos", "1")
 
     def download(self):
-        print "downloading wikipedia skos file from dbpedia"
-        url = "http://downloads.dbpedia.org/current/en/skos_categories_en.nt.bz2"
-        urllib.urlretrieve(url, skos_file)
+        print("downloading wikipedia skos file from dbpedia")
+        url = "http://downloads.dbpedia.org/3.9/en/skos_categories_en.nt.bz2"
+        urlretrieve(url, skos_file)
 
     def _name(self, url):
         m = re.search("^http://dbpedia.org/resource/Category:(.+)$", url)
-        return urllib.unquote(m.group(1).replace("_", " ")).decode("utf-8")
+        return unquote(m.group(1).replace("_", " "))
