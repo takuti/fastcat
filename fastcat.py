@@ -27,13 +27,13 @@ class FastCat(object):
         """Pass in a Wikipedia category and get back a list of broader Wikipedia
         categories.
         """
-        return list(self.db.smembers("b:%s" % cat))
+        return list(map(lambda res: res.decode('utf-8'), self.db.smembers("b:%s" % cat)))
 
     def narrower(self, cat):
         """Pass in a Wikipedia category and get back a list of narrower Wikipedia
         categories.
         """
-        return list(self.db.smembers("n:%s" % cat))
+        return list(map(lambda res: res.decode('utf-8'), self.db.smembers("n:%s" % cat)))
 
     def load(self):
         if self.db.get("loaded-skos"):
