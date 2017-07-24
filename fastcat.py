@@ -12,7 +12,7 @@ except ImportError:  # python3
 
 import redis
 
-skos_file = "skos.nt.bz2"
+skos_file = 'skos.nt.bz2'
 ntriple_pattern = re.compile('^<(.+)> <(.+)> <(.+)> \.\n$')
 
 
@@ -27,22 +27,22 @@ class FastCat(object):
         """Pass in a Wikipedia category and get back a list of broader Wikipedia
         categories.
         """
-        return list(map(lambda res: res.decode('utf-8'), self.db.smembers("b:%s" % cat)))
+        return list(map(lambda res: res.decode('utf-8'), self.db.smembers('b:%s' % cat)))
 
     def narrower(self, cat):
         """Pass in a Wikipedia category and get back a list of narrower Wikipedia
         categories.
         """
-        return list(map(lambda res: res.decode('utf-8'), self.db.smembers("n:%s" % cat)))
+        return list(map(lambda res: res.decode('utf-8'), self.db.smembers('n:%s' % cat)))
 
     def load(self):
-        if self.db.get("loaded-skos"):
+        if self.db.get('loaded-skos'):
             return
 
         if not os.path.isfile(skos_file):
             self.download()
 
-        print("loading %s" % skos_file)
+        print('loading %s' % skos_file)
         for line in bz2.BZ2File(skos_file):
             m = ntriple_pattern.match(line.decode('utf-8'))
 
@@ -50,22 +50,22 @@ class FastCat(object):
                 continue
 
             s, p, o = m.groups()
-            if p != "http://www.w3.org/2004/02/skos/core#broader":
+            if p != 'http://www.w3.org/2004/02/skos/core#broader':
                 continue
 
             narrower = self._name(s)
             broader = self._name(o)
-            self.db.sadd("b:%s" % narrower, broader)
-            self.db.sadd("n:%s" % broader, narrower)
-            print("added %s -> %s" % (broader, narrower))
+            self.db.sadd('b:%s' % narrower, broader)
+            self.db.sadd('n:%s' % broader, narrower)
+            print('added %s -> %s' % (broader, narrower))
 
-        self.db.set("loaded-skos", "1")
+        self.db.set('loaded-skos', '1')
 
     def download(self):
-        print("downloading wikipedia skos file from dbpedia")
-        url = "http://downloads.dbpedia.org/3.9/en/skos_categories_en.nt.bz2"
+        print('downloading wikipedia skos file from dbpedia')
+        url = 'http://downloads.dbpedia.org/3.9/en/skos_categories_en.nt.bz2'
         urlretrieve(url, skos_file)
 
     def _name(self, url):
-        m = re.search("^http://dbpedia.org/resource/Category:(.+)$", url)
-        return unquote(m.group(1).replace("_", " "))
+        m = re.search('^http://dbpedia.org/resource/Category:(.+)$', url)
+        return unquote(m.group(1).replace('_', ' '))
