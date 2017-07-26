@@ -1,0 +1,21 @@
+language: python
+python:
+  - 2.7
+  - 3.6
+
+os: osx
+
+sudo: required
+
+install:
+  - brew install redis
+  - pip install redis
+
+before_script:
+  - redis-server /usr/local/etc/redis.conf
+
+script:
+  - python test.py
+
+notifications:
+  email: false
