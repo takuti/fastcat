@@ -3,16 +3,15 @@ python:
   - 2.7
   - 3.6
 
-os: osx
-
+os: linux
 sudo: required
 
 install:
-  - brew install redis
+  - sudo apt-get install redis-server
   - pip install redis
 
 before_script:
-  - redis-server /usr/local/etc/redis.conf
+  - sudo redis-server &
 
 script:
   - python test.py
