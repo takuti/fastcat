@@ -55,7 +55,6 @@ class FastCatLoader(FastCatBase):
             broader = self._name(o)
             self.db.sadd('b:%s' % narrower, broader)
             self.db.sadd('n:%s' % broader, narrower)
-            print('added %s -> %s' % (broader, narrower))
 
         self.db.set('loaded-%s' % self.skos_file, '1')
 
