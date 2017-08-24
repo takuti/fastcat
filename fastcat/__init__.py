@@ -2,11 +2,8 @@ import os
 import re
 import bz2
 
-try:  # python2
-    from urllib import urlretrieve, unquote
-except ImportError:  # python3
-    from urllib.request import urlretrieve
-    from urllib.parse import unquote
+from urllib.request import urlretrieve
+from urllib.parse import unquote
 
 import redis
 
