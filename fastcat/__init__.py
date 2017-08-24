@@ -46,6 +46,8 @@ class FastCatLoader(FastCatBase):
 
         print('loading %s' % self.skos_file)
 
+        cnt = 0
+
         for line in bz2.BZ2File(self.skos_file):
             m = ntriple_pattern.match(line.decode('utf-8'))
 
@@ -60,6 +62,10 @@ class FastCatLoader(FastCatBase):
             broader = self._name(o)
             self.db.sadd('b:%s' % narrower, broader)
             self.db.sadd('n:%s' % broader, narrower)
+
+            cnt += 1
+            if cnt % 1000 == 0:
+                print('Loaded %d-th pair: %s -> %s' % (cnt, broader, narrower))
 
         self.db.set('loaded-%s' % self.skos_file, '1')
 
