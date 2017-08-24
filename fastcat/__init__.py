@@ -23,12 +23,19 @@ class FastCatBase(object):
 
 class FastCatLoader(FastCatBase):
 
-    def __init__(self, db=None):
+    def __init__(self, lang='en', db=None):
         super(FastCatLoader, self).__init__(db=db)
 
-        self.skos_file = 'skos.nt.bz2'
-        self.src_url = 'http://downloads.dbpedia.org/3.9/en/skos_categories_en.nt.bz2'
-        self.category_regexp = r'^http://dbpedia.org/resource/Category:(.+)$'
+        if lang == 'en':
+            self.skos_file = 'skos.nt.bz2'
+            self.src_url = 'http://downloads.dbpedia.org/3.9/en/skos_categories_en.nt.bz2'
+            self.category_regexp = r'^http://dbpedia.org/resource/Category:(.+)$'
+        elif lang == 'ja':
+            self.skos_file = 'skos_ja.ttl.bz2'
+            self.src_url = 'http://ja.dbpedia.org/dumps/20160407/jawiki-20160407-skos-categories.ttl.bz2'
+            self.category_regexp = r'^http://ja.dbpedia.org/resource/Category:(.+)$'
+        else:
+            raise ValueError('`lang` must be either "en" or "ja": ' + lang)
 
     def load(self):
         if self.db.get('loaded-%s' % self.skos_file):
@@ -63,16 +70,6 @@ class FastCatLoader(FastCatBase):
     def _name(self, url):
         m = re.search(self.category_regexp, url)
         return unquote(m.group(1).replace('_', ' '))
-
-
-class FastCatLoaderJapanese(FastCatLoader):
-
-    def __init__(self, db=None):
-        super(FastCatLoaderJapanese, self).__init__(db=db)
-
-        self.skos_file = 'skos_ja.ttl.bz2'
-        self.src_url = 'http://ja.dbpedia.org/dumps/20160407/jawiki-20160407-skos-categories.ttl.bz2'
-        self.category_regexp = r'^http://ja.dbpedia.org/resource/Category:(.+)$'
 
 
 class FastCat(FastCatBase):
