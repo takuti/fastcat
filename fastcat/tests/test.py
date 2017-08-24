@@ -17,10 +17,14 @@ class FastcatEnglishTests(unittest.TestCase):
             FastCatLoader(lang='cn')
 
     def test_narrower(self):
-        self.assertTrue('Functional languages' in self.f.narrower('Functional programming'))
+        res = self.f.narrower('Functional programming')
+        print(res)
+        self.assertTrue('Functional languages' in res)
 
     def test_broader(self):
-        self.assertTrue('Computing' in self.f.broader('Computer programming'))
+        res = self.f.broader('Computer programming')
+        print(res)
+        self.assertTrue('Computing' in res)
 
 
 class FastcatJapaneseTests(unittest.TestCase):
@@ -30,7 +34,11 @@ class FastcatJapaneseTests(unittest.TestCase):
         self.f = FastCat()
 
     def test_narrower(self):
-        self.assertTrue('関数型言語' in self.f.narrower('関数型プログラミング'))
+        res = self.f.narrower('関数型プログラミング')
+        print(res)
+        self.assertTrue('関数型言語' in res)
 
     def test_broader(self):
-        self.assertTrue('コンピュータ' in self.f.broader('プログラミング'))
+        res = self.f.broader('プログラミング')
+        print(res)
+        self.assertTrue('コンピュータ' in res)
