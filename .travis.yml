@@ -14,7 +14,7 @@ before_script:
   - sudo redis-server &
 
 script:
-  - nosetests . -v
+  - travis_wait nosetests . -v
 
 notifications:
   email: false
